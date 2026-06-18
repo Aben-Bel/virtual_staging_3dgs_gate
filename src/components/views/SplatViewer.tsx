@@ -88,6 +88,25 @@ export function SplatViewer({ splat }: Props) {
 
     captureRef.current = {
       capture: () => (renderer ? renderer.domElement.toDataURL('image/png') : null),
+      getPose: () => {
+        const cam = viewer?.camera;
+        const tgt = viewer?.controls?.target;
+        if (!cam || !tgt) return null;
+        return {
+          position: [cam.position.x, cam.position.y, cam.position.z],
+          target: [tgt.x, tgt.y, tgt.z],
+          up: [cam.up.x, cam.up.y, cam.up.z],
+        };
+      },
+      setPose: (pose) => {
+        const cam = viewer?.camera;
+        const controls = viewer?.controls;
+        if (!cam || !controls) return;
+        cam.position.set(...pose.position);
+        cam.up.set(...pose.up);
+        controls.target.set(...pose.target);
+        controls.update();
+      },
     };
 
     onResize = () => {

@@ -23,6 +23,7 @@ export type AppAction =
   | { type: 'REMOVE_VIEW'; id: string }
   | { type: 'SET_ACTIVE_VIEW'; id: string }
   | { type: 'SET_REF_VIEW'; id: string }
+  | { type: 'SET_VIEW_RESULT'; id: string; stagedDataUrl: string }
   | { type: 'SET_API_KEY'; apiKey: string }
   | { type: 'SET_MODEL'; model: string }
   | { type: 'SELECT_PRESET'; groupId: string; optionId: string }
@@ -54,8 +55,9 @@ export function appReducer(state: AppState, action: AppAction): AppState {
 
     case 'ADD_VIEW': {
       const views = [...state.views, action.view];
-      // First view auto-becomes active.
-      return { ...state, views, activeViewId: state.activeViewId ?? action.view.id };
+      // A fresh capture becomes the active view; uploads only if nothing is active.
+      const activate = action.view.origin === 'capture' || state.activeViewId === null;
+      return { ...state, views, activeViewId: activate ? action.view.id : state.activeViewId };
     }
 
     case 'REMOVE_VIEW': {
@@ -72,6 +74,14 @@ export function appReducer(state: AppState, action: AppAction): AppState {
       return {
         ...state,
         views: state.views.map((v) => ({ ...v, isRef: v.id === action.id })),
+      };
+
+    case 'SET_VIEW_RESULT':
+      return {
+        ...state,
+        views: state.views.map((v) =>
+          v.id === action.id ? { ...v, stagedDataUrl: action.stagedDataUrl } : v,
+        ),
       };
 
     case 'SET_API_KEY':

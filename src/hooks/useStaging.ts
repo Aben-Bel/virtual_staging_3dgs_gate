@@ -38,7 +38,7 @@ interface UseStagingArgs {
  * rate-limit / reconnection. All async lives here; the machine stays pure.
  */
 export function useStaging({ isOffline, justReconnected }: UseStagingArgs) {
-  const { state: app } = useStore();
+  const { state: app, dispatch: appDispatch } = useStore();
   const provider = useStagingProvider();
   const [state, dispatch] = useReducer(stagingReducer, initialStagingState);
 
@@ -83,7 +83,10 @@ export function useStaging({ isOffline, justReconnected }: UseStagingArgs) {
     provider
       .stage({ imageBase64: base64, mimeType, prompt, apiKey, model, signal: controller.signal })
       .then((res) => {
-        if (!cancelled) dispatch({ type: 'SUCCESS', imageDataUrl: res.imageDataUrl });
+        if (cancelled) return;
+        dispatch({ type: 'SUCCESS', imageDataUrl: res.imageDataUrl });
+        // Persist the result onto the captured view it belongs to.
+        appDispatch({ type: 'SET_VIEW_RESULT', id: view.id, stagedDataUrl: res.imageDataUrl });
       })
       .catch((err) => {
         if (!cancelled) dispatch({ type: 'FAILURE', error: toErrorInfo(err) });

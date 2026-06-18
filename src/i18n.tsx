@@ -35,7 +35,7 @@ const en = {
   stage: {
     navigate: 'Navigate',
     compare: 'Compare',
-    capture: '📷 Capture angle',
+    capture: 'Capture angle',
     original: 'Original',
     staged: 'Staged',
     starting: 'Starting chain…',
@@ -128,7 +128,7 @@ const de: Dict = {
   stage: {
     navigate: 'Navigieren',
     compare: 'Vergleichen',
-    capture: '📷 Blickwinkel erfassen',
+    capture: 'Blickwinkel erfassen',
     original: 'Original',
     staged: 'Gestaltet',
     starting: 'Verarbeitung startet…',

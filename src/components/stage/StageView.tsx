@@ -25,13 +25,21 @@ export function StageView({ staging, onRetry, onCancel }: Props) {
   const activeView = selectActiveView(state);
   const [mode, setMode] = useState<Mode>('navigate');
 
-  const hasOutput =
-    staging.status === 'loading' || staging.status === 'result' || staging.status === 'error';
+  // The active capture carries its own staged result, so switching views shows
+  // the right pairing instead of one shared/global result.
+  const stagedDataUrl = activeView?.stagedDataUrl ?? null;
+  const hasOutput = staging.status === 'loading' || staging.status === 'error' || !!stagedDataUrl;
 
-  // Surface progress/result automatically.
+  // Show progress while staging.
   useEffect(() => {
-    if (staging.status === 'loading' || staging.status === 'result') setMode('compare');
+    if (staging.status === 'loading') setMode('compare');
   }, [staging.status]);
+
+  // When the active view changes, show its result if it has one, else navigate
+  // back to that view's camera angle.
+  useEffect(() => {
+    setMode(stagedDataUrl ? 'compare' : 'navigate');
+  }, [activeView?.id, stagedDataUrl]);
 
   return (
     <main className={styles.stage}>
@@ -59,21 +67,23 @@ export function StageView({ staging, onRetry, onCancel }: Props) {
       </div>
 
       <div className={styles.area}>
-        {mode === 'navigate' ? (
-          <>
-            <SplatViewer splat={splat} />
-            {activeView && (
-              <img className={styles.activeThumb} src={activeView.dataUrl} alt={activeView.label} />
-            )}
-          </>
-        ) : (
-          <CompareArea
-            staging={staging}
-            beforeSrc={activeView?.dataUrl ?? null}
-            onRetry={onRetry}
-            onCancel={onCancel}
-            t={t}
-          />
+        {/* Viewer stays mounted across modes so the camera/pose persists and the
+            splat is never reloaded; Compare renders as an overlay on top. */}
+        <SplatViewer splat={splat} />
+        {mode === 'navigate' && activeView && (
+          <img className={styles.activeThumb} src={activeView.dataUrl} alt={activeView.label} />
+        )}
+        {mode === 'compare' && (
+          <div className={styles.compareOverlay}>
+            <CompareArea
+              staging={staging}
+              beforeSrc={activeView?.dataUrl ?? null}
+              afterSrc={stagedDataUrl}
+              onRetry={onRetry}
+              onCancel={onCancel}
+              t={t}
+            />
+          </div>
         )}
       </div>
     </main>
@@ -83,12 +93,14 @@ export function StageView({ staging, onRetry, onCancel }: Props) {
 function CompareArea({
   staging,
   beforeSrc,
+  afterSrc,
   onRetry,
   onCancel,
   t,
 }: {
   staging: StagingState;
   beforeSrc: string | null;
+  afterSrc: string | null;
   onRetry: () => void;
   onCancel: () => void;
   t: Dict;
@@ -102,6 +114,22 @@ function CompareArea({
       </div>
     );
   }
+  // Prefer the active view's own staged result (persists across view switches).
+  if (afterSrc && beforeSrc) {
+    return (
+      <>
+        <BeforeAfter
+          beforeSrc={beforeSrc}
+          afterSrc={afterSrc}
+          beforeLabel={t.stage.original}
+          afterLabel={t.stage.staged}
+        />
+        <a className={styles.download} href={afterSrc} download="staged.png">
+          {t.stage.download}
+        </a>
+      </>
+    );
+  }
   if (staging.status === 'error') {
     return (
       <div className={styles.center}>
@@ -111,21 +139,6 @@ function CompareArea({
           <Button variant="accent" onClick={onRetry}>{t.stage.retry}</Button>
         )}
       </div>
-    );
-  }
-  if (staging.status === 'result' && beforeSrc) {
-    return (
-      <>
-        <BeforeAfter
-          beforeSrc={beforeSrc}
-          afterSrc={staging.imageDataUrl}
-          beforeLabel={t.stage.original}
-          afterLabel={t.stage.staged}
-        />
-        <a className={styles.download} href={staging.imageDataUrl} download="staged.png">
-          {t.stage.download}
-        </a>
-      </>
     );
   }
   return (

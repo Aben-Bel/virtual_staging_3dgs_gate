@@ -8,6 +8,13 @@ export interface SplatSource {
   format: 'splat' | 'ply' | 'ksplat' | 'unknown';
 }
 
+/** Camera pose remembered with a capture so the view can be restored. */
+export interface CameraPose {
+  position: [number, number, number];
+  target: [number, number, number];
+  up: [number, number, number];
+}
+
 /** A captured camera angle from the splat (or an uploaded reference image). */
 export interface CapturedView {
   id: string;
@@ -15,6 +22,10 @@ export interface CapturedView {
   dataUrl: string; // PNG data URL
   origin: 'capture' | 'upload';
   isRef?: boolean;
+  /** Camera pose at capture time (capture-origin views only). */
+  pose?: CameraPose;
+  /** Staged result for THIS view, so switching back shows its own result. */
+  stagedDataUrl?: string;
 }
 
 /** One selectable option inside a preset group. */

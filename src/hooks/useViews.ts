@@ -34,12 +34,14 @@ export function useViews() {
   const captureView = useCallback(() => {
     const dataUrl = captureRef.current?.capture();
     if (!dataUrl) return;
+    const pose = captureRef.current?.getPose() ?? undefined;
     const captureCount = state.views.filter((v) => v.origin === 'capture').length;
     const view: CapturedView = {
       id: crypto.randomUUID(),
       label: `Auto-${String(captureCount + 1).padStart(2, '0')}`,
       dataUrl,
       origin: 'capture',
+      pose,
     };
     dispatch({ type: 'ADD_VIEW', view });
   }, [captureRef, state.views, dispatch]);
@@ -60,8 +62,13 @@ export function useViews() {
 
   const removeView = useCallback((id: string) => dispatch({ type: 'REMOVE_VIEW', id }), [dispatch]);
   const setActiveView = useCallback(
-    (id: string) => dispatch({ type: 'SET_ACTIVE_VIEW', id }),
-    [dispatch],
+    (id: string) => {
+      dispatch({ type: 'SET_ACTIVE_VIEW', id });
+      // Restore the camera to where this view was captured.
+      const view = state.views.find((v) => v.id === id);
+      if (view?.pose) captureRef.current?.setPose(view.pose);
+    },
+    [state.views, captureRef, dispatch],
   );
   const setRefView = useCallback((id: string) => dispatch({ type: 'SET_REF_VIEW', id }), [dispatch]);
 

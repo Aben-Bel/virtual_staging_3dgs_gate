@@ -37,6 +37,8 @@
 
 .area { position: relative; flex: 1; overflow: hidden; }
 
+.compareOverlay { position: absolute; inset: 0; z-index: 3; background: var(--color-bg); }
+
 .activeThumb {
   position: absolute;
   bottom: var(--space-4);

@@ -29,16 +29,21 @@ declare module '@mkkellogg/gaussian-splats-3d' {
     y: number;
     z: number;
   }
+  export interface MutableVec3 extends Vec3Like {
+    set(x: number, y: number, z: number): MutableVec3;
+    copy(v: Vec3Like): MutableVec3;
+  }
 
   export class Viewer {
     constructor(options?: ViewerOptions);
     camera?: {
-      position: { set(x: number, y: number, z: number): void };
+      position: MutableVec3;
+      up: MutableVec3;
       aspect: number;
       fov?: number;
       updateProjectionMatrix(): void;
     };
-    controls?: { target: { copy(v: Vec3Like): void }; update(): void };
+    controls?: { target: MutableVec3; update(): void };
     splatMesh?: {
       calculatedSceneCenter?: Vec3Like;
       maxSplatDistanceFromSceneCenter?: number;
