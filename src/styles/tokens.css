@@ -1,0 +1,67 @@
+/* Design tokens — the ONLY place raw colors/sizes are defined.
+   Components consume these via var(--token); never hardcode values. */
+:root {
+  /* color: surfaces */
+  --color-bg: #0b0c0f;
+  --color-surface-1: #131419;
+  --color-surface-2: #1a1c23;
+  --color-surface-3: #23262f;
+  --color-border: #2a2d37;
+  --color-border-strong: #3a3e4a;
+
+  /* color: text */
+  --color-text: #e9eaee;
+  --color-text-muted: #9aa0ac;
+  --color-text-faint: #6b7180;
+
+  /* color: brand / accent (warm amber from reference) */
+  --color-accent: #e0954a;
+  --color-accent-soft: rgba(224, 149, 74, 0.16);
+  --color-accent-text: #f0b072;
+
+  /* color: semantic */
+  --color-primary: #2b6cff;
+  --color-success: #16a34a;
+  --color-danger: #ef4444;
+  --color-warning: #f59e0b;
+  --color-info: #3b82f6;
+
+  /* typography */
+  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-size-xs: 11px;
+  --font-size-sm: 13px;
+  --font-size-md: 14px;
+  --font-size-lg: 16px;
+  --font-size-xl: 20px;
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-bold: 700;
+
+  /* spacing scale */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+
+  /* radius */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-pill: 999px;
+
+  /* elevation */
+  --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-2: 0 8px 24px rgba(0, 0, 0, 0.5);
+
+  /* layout */
+  --panel-left-width: 240px;
+  --panel-right-width: 320px;
+  --topbar-height: 0px;
+
+  /* motion */
+  --motion-fast: 120ms ease;
+  --motion-base: 200ms ease;
+}

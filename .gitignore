@@ -1,0 +1,21 @@
+node_modules
+dist
+*.tsbuildinfo
+.DS_Store
+*.log
+
+# env / secrets
+.env
+.env.*
+
+# vercel
+.vercel
+
+# MCP test artifacts + screenshots
+.playwright-mcp/
+/*.png
+
+# large sample splat assets (app loads splats via upload, not from here)
+public/*.ksplat
+public/*.splat
+public/*.ply

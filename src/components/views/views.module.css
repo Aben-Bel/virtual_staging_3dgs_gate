@@ -1,0 +1,101 @@
+.panel {
+  width: var(--panel-left-width);
+  flex-shrink: 0;
+  background: var(--color-surface-1);
+  border-right: 1px solid var(--color-border);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  overflow-y: auto;
+}
+
+.head { display: flex; align-items: center; justify-content: space-between; }
+.title {
+  font-size: var(--font-size-xs);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-text-faint);
+}
+.addBtn {
+  background: transparent;
+  border: 1px solid var(--color-border);
+  color: var(--color-accent-text);
+  border-radius: var(--radius-sm);
+  padding: var(--space-1) var(--space-2);
+  font-size: var(--font-size-xs);
+}
+.addBtn:hover { border-color: var(--color-accent); }
+
+.importBtn {
+  width: 100%;
+  background: var(--color-surface-2);
+  border: 1px dashed var(--color-border-strong);
+  color: var(--color-text);
+  border-radius: var(--radius-md);
+  padding: var(--space-3);
+  font-size: var(--font-size-sm);
+  text-align: left;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.importBtn:hover { border-color: var(--color-accent); }
+.hintTiny { margin: 0; font-size: var(--font-size-xs); color: var(--color-text-faint); }
+
+.thumbsEmpty { font-size: var(--font-size-sm); color: var(--color-text-faint); }
+.thumbs { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--space-3); }
+
+.thumb {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  background: var(--color-surface-2);
+}
+.thumbActive { border-color: var(--color-accent); box-shadow: 0 0 0 1px var(--color-accent); }
+.thumbImgBtn { display: block; width: 100%; padding: 0; border: 0; background: #000; position: relative; cursor: pointer; }
+.thumbImgBtn img { display: block; width: 100%; aspect-ratio: 16 / 10; object-fit: cover; }
+.refBadge {
+  position: absolute; top: var(--space-1); left: var(--space-1);
+  background: var(--color-success); color: #fff;
+  font-size: var(--font-size-xs); padding: 0 var(--space-1); border-radius: var(--radius-sm);
+}
+.thumbBar { display: flex; align-items: center; justify-content: space-between; padding: var(--space-1) var(--space-2); }
+.thumbLabel { font-size: var(--font-size-xs); color: var(--color-text-muted); }
+.thumbActions { display: flex; gap: var(--space-1); }
+.thumbAction { background: transparent; border: 0; color: var(--color-text-faint); font-size: var(--font-size-sm); padding: 0 var(--space-1); }
+.thumbAction:hover { color: var(--color-text); }
+
+/* Viewer (used inside StageView) */
+.viewerCanvas { position: absolute; inset: 0; }
+
+.upAxis {
+  position: absolute;
+  top: var(--space-3);
+  right: var(--space-3);
+  z-index: 4;
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-pill);
+  padding: var(--space-1) var(--space-2);
+}
+.upAxisLabel { font-size: var(--font-size-xs); color: var(--color-text-faint); margin-right: var(--space-1); }
+.upAxisBtn, .upAxisActive {
+  border: 0;
+  background: transparent;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+  padding: 2px var(--space-2);
+  border-radius: var(--radius-sm);
+}
+.upAxisActive { background: var(--color-accent); color: #1b1206; }
+.viewerEmpty, .viewerError {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--space-2);
+  color: var(--color-text-faint); font-size: var(--font-size-sm);
+}
+.viewerEmpty span { font-size: var(--font-size-xs); }
+.viewerError { color: var(--color-danger); }

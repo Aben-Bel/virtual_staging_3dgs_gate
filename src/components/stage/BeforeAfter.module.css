@@ -1,0 +1,69 @@
+.wrap {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  touch-action: none;
+  cursor: ew-resize;
+  background: #000;
+  user-select: none;
+}
+
+.img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  pointer-events: none;
+}
+
+.beforeClip {
+  position: absolute;
+  inset: 0;
+}
+
+.handle {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+.handleLine {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: #fff;
+  box-shadow: 0 0 6px rgba(0, 0, 0, 0.6);
+}
+.handleGrip {
+  position: relative;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: #fff;
+  color: #111;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--font-size-md);
+  box-shadow: var(--shadow-2);
+}
+
+.tag {
+  position: absolute;
+  top: var(--space-3);
+  z-index: 2;
+  background: rgba(0, 0, 0, 0.55);
+  color: #fff;
+  font-size: var(--font-size-xs);
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-pill);
+  pointer-events: none;
+}
+.tagLeft { left: var(--space-3); }
+.tagRight { right: var(--space-3); }

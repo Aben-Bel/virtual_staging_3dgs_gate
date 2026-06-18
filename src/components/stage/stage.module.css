@@ -1,0 +1,86 @@
+.stage {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  background: var(--color-bg);
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.segmented {
+  display: inline-flex;
+  background: var(--color-surface-1);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 2px;
+}
+.seg, .segActive {
+  border: 0;
+  background: transparent;
+  color: var(--color-text-muted);
+  padding: var(--space-1) var(--space-4);
+  font-size: var(--font-size-sm);
+  border-radius: var(--radius-sm);
+}
+.seg:disabled { opacity: 0.4; cursor: not-allowed; }
+.segActive { background: var(--color-surface-3); color: var(--color-text); }
+
+.captureBtn { font-size: var(--font-size-sm); }
+
+.area { position: relative; flex: 1; overflow: hidden; }
+
+.activeThumb {
+  position: absolute;
+  bottom: var(--space-4);
+  left: var(--space-4);
+  z-index: 3;
+  width: 132px;
+  border: 1px solid var(--color-accent);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-2);
+}
+
+.center {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  text-align: center;
+}
+.muted { color: var(--color-text-faint); font-size: var(--font-size-sm); }
+.errorTitle { color: var(--color-danger); font-size: var(--font-size-md); font-weight: var(--font-weight-medium); }
+
+.download {
+  position: absolute;
+  bottom: var(--space-4);
+  right: var(--space-4);
+  z-index: 4;
+  background: var(--color-primary);
+  color: #fff;
+  text-decoration: none;
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-sm);
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid var(--color-surface-3);
+  border-top-color: var(--color-accent);
+  border-radius: 50%;
+  animation: spin 0.9s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
