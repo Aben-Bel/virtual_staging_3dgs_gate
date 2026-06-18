@@ -14,21 +14,21 @@ export const LOCALES: { id: Locale; label: string }[] = [
 ];
 
 const en = {
-  app: { title: 'Venue Virtual Staging' },
+  app: { title: 'Venue Virtual Staging', collapse: 'Collapse panel', expand: 'Expand panel' },
   views: {
     title: 'Views',
     addImages: '+ Add images',
     importSplat: 'Import splat',
     splatLoaded: (name: string) => `Splat: ${name}`,
     dragHint: '…or drag a splat / images here',
-    matterportSoon: 'Matterport import — coming soon',
+    matterportSoon: 'Matterport: export as GLB/OBJ, then import it here',
     empty: 'No views yet — capture an angle from the splat.',
     useAsRef: 'Use as reference',
     remove: 'Remove',
   },
   viewer: {
     emptyTitle: 'Import a splat to begin.',
-    emptyFormats: '.splat / .ply / .ksplat',
+    emptyFormats: '.splat / .ply / .ksplat / .glb / .obj',
     loadError: 'Could not load this splat file.',
     upAxis: 'Up axis',
   },
@@ -117,21 +117,21 @@ const en = {
 export type Dict = typeof en;
 
 const de: Dict = {
-  app: { title: 'Virtuelles Venue-Staging' },
+  app: { title: 'Virtuelles Venue-Staging', collapse: 'Einklappen', expand: 'Ausklappen' },
   views: {
     title: 'Ansichten',
     addImages: '+ Bilder hinzufügen',
     importSplat: 'Splat importieren',
     splatLoaded: (name: string) => `Splat: ${name}`,
     dragHint: '…oder Splat / Bilder hierher ziehen',
-    matterportSoon: 'Matterport-Import — in Kürze',
+    matterportSoon: 'Matterport: als GLB/OBJ exportieren und hier importieren',
     empty: 'Noch keine Ansichten — erfasse einen Blickwinkel aus dem Splat.',
     useAsRef: 'Als Referenz verwenden',
     remove: 'Entfernen',
   },
   viewer: {
     emptyTitle: 'Importiere einen Splat, um zu beginnen.',
-    emptyFormats: '.splat / .ply / .ksplat',
+    emptyFormats: '.splat / .ply / .ksplat / .glb / .obj',
     loadError: 'Diese Splat-Datei konnte nicht geladen werden.',
     upAxis: 'Hochachse',
   },

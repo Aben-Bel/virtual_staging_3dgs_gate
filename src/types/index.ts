@@ -1,11 +1,14 @@
 // ---------- Shared domain types ----------
 
 /** A splat file the user imported. */
+export type SceneFormat = 'splat' | 'ply' | 'ksplat' | 'glb' | 'gltf' | 'obj' | 'unknown';
+
+/** A 3D scene the user imported: a Gaussian splat or a mesh (Matterport export). */
 export interface SplatSource {
   id: string;
   name: string;
   url: string; // object URL
-  format: 'splat' | 'ply' | 'ksplat' | 'unknown';
+  format: SceneFormat;
 }
 
 /** Camera pose remembered with a capture so the view can be restored. */

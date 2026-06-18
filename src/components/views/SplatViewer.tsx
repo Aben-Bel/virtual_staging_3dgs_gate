@@ -10,12 +10,11 @@ interface Props {
   splat: SplatSource | null;
 }
 
-const FORMAT = {
+const FORMAT: Record<string, number | undefined> = {
   ply: GaussianSplats3D.SceneFormat.Ply,
   splat: GaussianSplats3D.SceneFormat.Splat,
   ksplat: GaussianSplats3D.SceneFormat.KSplat,
-  unknown: undefined,
-} as const;
+};
 
 /**
  * Center the orbit target on the splat's actual center and frame the camera.
@@ -25,13 +24,11 @@ const FORMAT = {
 function frameScene(viewer: GaussianSplats3D.Viewer, attempt = 0): void {
   const center = viewer.splatMesh?.calculatedSceneCenter;
   const radius = viewer.splatMesh?.maxSplatDistanceFromSceneCenter ?? 0;
-  // radius is only used to know the bounds have been computed (it's outlier-
-  // inflated, so we don't use it for distance).
   if (!center || radius <= 0) {
     if (attempt < 30) requestAnimationFrame(() => frameScene(viewer, attempt + 1));
     return;
   }
-  // Start the camera AT the scene centroid, looking outward — no zoom-out.
+  // Start the camera at the scene centre (in the middle), looking outward.
   viewer.camera?.position.set(center.x, center.y, center.z);
   viewer.controls?.target.set(center.x, center.y, center.z - 1);
   viewer.controls?.update();
@@ -57,7 +54,7 @@ export function SplatViewer({ splat }: Props) {
   const { t } = useI18n();
   const containerRef = useRef<HTMLDivElement>(null);
   const captureRef = useCaptureRef();
-  const [upAxis, setUpAxis] = useState<UpAxis>('y+');
+  const [upAxis, setUpAxis] = useState<UpAxis>('y-');
 
   useEffect(() => {
     const container = containerRef.current;
@@ -118,6 +115,9 @@ export function SplatViewer({ splat }: Props) {
       }
     };
     window.addEventListener('resize', onResize);
+    // Also resize when the container itself changes (e.g. a sidebar collapses).
+    const resizeObserver = new ResizeObserver(() => onResize?.());
+    resizeObserver.observe(container);
 
     viewer
       .addSplatScene(splat.url, { format: FORMAT[splat.format], showLoadingUI: true })
@@ -134,6 +134,7 @@ export function SplatViewer({ splat }: Props) {
     return () => {
       cancelled = true;
       if (onResize) window.removeEventListener('resize', onResize);
+      resizeObserver.disconnect();
       captureRef.current = null;
       const cleanupRenderer = renderer;
       const cleanupViewer = viewer;

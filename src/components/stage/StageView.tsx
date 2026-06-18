@@ -4,6 +4,8 @@ import { selectActiveView } from '../../state/selectors';
 import { useStore } from '../../state/store';
 import { useI18n, type Dict } from '../../i18n';
 import { SplatViewer } from '../views/SplatViewer';
+import { MeshViewer } from '../views/MeshViewer';
+import { isMeshSource } from '../../services/splat/SplatRenderer';
 import { BeforeAfter } from './BeforeAfter';
 import { Button } from '../ui/Button';
 import type { StagingState } from '../../state/machines/staging';
@@ -68,8 +70,9 @@ export function StageView({ staging, onRetry, onCancel }: Props) {
 
       <div className={styles.area}>
         {/* Viewer stays mounted across modes so the camera/pose persists and the
-            splat is never reloaded; Compare renders as an overlay on top. */}
-        <SplatViewer splat={splat} />
+            splat is never reloaded; Compare renders as an overlay on top.
+            Mesh sources (Matterport GLB/OBJ) use MeshViewer; splats use SplatViewer. */}
+        {isMeshSource(splat) ? <MeshViewer splat={splat} /> : <SplatViewer splat={splat} />}
         {mode === 'navigate' && activeView && (
           <img className={styles.activeThumb} src={activeView.dataUrl} alt={activeView.label} />
         )}

@@ -25,8 +25,16 @@ export function useCaptureRef(): CaptureRef {
   return ref;
 }
 
+const MESH_FORMATS = ['glb', 'gltf', 'obj'] as const;
+
 export function inferFormat(name: string): SplatSource['format'] {
   const ext = name.split('.').pop()?.toLowerCase();
   if (ext === 'splat' || ext === 'ply' || ext === 'ksplat') return ext;
+  if (ext === 'glb' || ext === 'gltf' || ext === 'obj') return ext;
   return 'unknown';
+}
+
+/** Mesh sources (Matterport-style) render via MeshViewer; others via SplatViewer. */
+export function isMeshSource(source: SplatSource | null): boolean {
+  return !!source && (MESH_FORMATS as readonly string[]).includes(source.format);
 }

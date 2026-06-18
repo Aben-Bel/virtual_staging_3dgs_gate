@@ -24,7 +24,7 @@ export function ViewsPanel() {
   const onDrop = (e: React.DragEvent) => {
     e.preventDefault();
     const files = Array.from(e.dataTransfer.files);
-    const splatFile = files.find((f) => /\.(splat|ply|ksplat)$/i.test(f.name));
+    const splatFile = files.find((f) => /\.(splat|ply|ksplat|glb|gltf|obj)$/i.test(f.name));
     const images = files.filter((f) => f.type.startsWith('image/'));
     if (splatFile) importSplat(splatFile);
     if (images.length) void addReferenceImages(images);
@@ -60,7 +60,7 @@ export function ViewsPanel() {
       <input
         ref={splatInput}
         type="file"
-        accept=".splat,.ply,.ksplat"
+        accept=".splat,.ply,.ksplat,.glb,.gltf,.obj"
         hidden
         onChange={(e) => {
           const f = e.target.files?.[0];

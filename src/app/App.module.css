@@ -1,2 +1,18 @@
 .shell { display: flex; flex-direction: column; height: 100%; }
 .body { flex: 1; display: flex; min-height: 0; }
+
+/* Sidebar = panel + an in-flow rail (thin gutter). The rail never overlaps the
+   panel or the stage; collapsing just hides the panel, leaving the rail. */
+.side { display: flex; min-height: 0; flex-shrink: 0; }
+
+.rail {
+  flex-shrink: 0;
+  width: 22px;
+  align-self: stretch;
+  border: 0;
+  background: var(--color-surface-1);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-md);
+  cursor: pointer;
+}
+.rail:hover { background: var(--color-surface-2); color: var(--color-text); }
