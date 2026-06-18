@@ -25,16 +25,15 @@ const FORMAT = {
 function frameScene(viewer: GaussianSplats3D.Viewer, attempt = 0): void {
   const center = viewer.splatMesh?.calculatedSceneCenter;
   const radius = viewer.splatMesh?.maxSplatDistanceFromSceneCenter ?? 0;
+  // radius is only used to know the bounds have been computed (it's outlier-
+  // inflated, so we don't use it for distance).
   if (!center || radius <= 0) {
     if (attempt < 30) requestAnimationFrame(() => frameScene(viewer, attempt + 1));
     return;
   }
-  // Distance to fit a sphere of `radius` in the vertical FOV: r / sin(fov/2).
-  const fovDeg = viewer.camera?.fov ?? 50;
-  const halfFov = (fovDeg * Math.PI) / 180 / 2;
-  const dist = (radius / Math.sin(halfFov)) * 1.1;
-  viewer.camera?.position.set(center.x, center.y + radius * 0.15, center.z + dist);
-  viewer.controls?.target.copy(center);
+  // Start the camera AT the scene centroid, looking outward — no zoom-out.
+  viewer.camera?.position.set(center.x, center.y, center.z);
+  viewer.controls?.target.set(center.x, center.y, center.z - 1);
   viewer.controls?.update();
 }
 
@@ -69,7 +68,7 @@ export function SplatViewer({ splat }: Props) {
     let cancelled = false;
     let onResize: (() => void) | null = null;
 
-    renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
+    renderer = new THREE.WebGLRenderer({ antialias: false, preserveDrawingBuffer: true });
     renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
     renderer.setSize(container.clientWidth, container.clientHeight);
     container.appendChild(renderer.domElement);
@@ -79,8 +78,6 @@ export function SplatViewer({ splat }: Props) {
       useBuiltInControls: true,
       sharedMemoryForWorkers: false,
       selfDrivenMode: true,
-      antialiased: true,
-      sphericalHarmonicsDegree: 2, // view-dependent shading → much better quality
       cameraUp: [...UP_AXES[upAxis]],
       initialCameraPosition: [0, 1, -4],
       initialCameraLookAt: [0, 0, 0],
