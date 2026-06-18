@@ -10,6 +10,8 @@ declare module '@mkkellogg/gaussian-splats-3d' {
     renderer?: unknown;
     useBuiltInControls?: boolean;
     sharedMemoryForWorkers?: boolean;
+    gpuAcceleratedSort?: boolean;
+    freeIntermediateSplatData?: boolean;
     selfDrivenMode?: boolean;
     antialiased?: boolean;
     sphericalHarmonicsDegree?: number;
@@ -50,6 +52,8 @@ declare module '@mkkellogg/gaussian-splats-3d' {
     };
     addSplatScene(url: string, options?: AddSceneOptions): Promise<void>;
     start(): void;
+    update(): void;
+    render(): void;
     dispose(): Promise<void> | void;
   }
 }

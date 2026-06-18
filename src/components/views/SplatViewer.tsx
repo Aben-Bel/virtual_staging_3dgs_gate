@@ -68,15 +68,21 @@ export function SplatViewer({ splat }: Props) {
     let cancelled = false;
     let onResize: (() => void) | null = null;
 
-    renderer = new THREE.WebGLRenderer({ antialias: false, preserveDrawingBuffer: true });
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    renderer = new THREE.WebGLRenderer({ antialias: false });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5));
     renderer.setSize(container.clientWidth, container.clientHeight);
     container.appendChild(renderer.domElement);
+
+    // Use the SharedArrayBuffer fast path only when the page is cross-origin
+    // isolated (COOP/COEP headers present); otherwise fall back so it can't crash.
+    const isolated = typeof crossOriginIsolated !== 'undefined' && crossOriginIsolated === true;
 
     viewer = new GaussianSplats3D.Viewer({
       renderer,
       useBuiltInControls: true,
-      sharedMemoryForWorkers: false,
+      sharedMemoryForWorkers: isolated,
+      gpuAcceleratedSort: isolated,
+      freeIntermediateSplatData: true,
       selfDrivenMode: true,
       cameraUp: [...UP_AXES[upAxis]],
       initialCameraPosition: [0, 1, -4],
@@ -84,7 +90,18 @@ export function SplatViewer({ splat }: Props) {
     });
 
     captureRef.current = {
-      capture: () => (renderer ? renderer.domElement.toDataURL('image/png') : null),
+      // Render on demand and read the buffer synchronously — avoids the
+      // per-frame cost of preserveDrawingBuffer.
+      capture: () => {
+        if (!renderer || !viewer) return null;
+        try {
+          viewer.update();
+          viewer.render();
+        } catch {
+          /* not ready */
+        }
+        return renderer.domElement.toDataURL('image/png');
+      },
       getPose: () => {
         const cam = viewer?.camera;
         const tgt = viewer?.controls?.target;
@@ -138,7 +155,10 @@ export function SplatViewer({ splat }: Props) {
       const cleanupRenderer = renderer;
       const cleanupViewer = viewer;
       Promise.resolve(cleanupViewer?.dispose?.()).finally(() => {
+        // Fully release the WebGL context so contexts/workers don't accumulate
+        // across re-mounts (browsers cap live contexts).
         cleanupRenderer?.dispose();
+        cleanupRenderer?.forceContextLoss();
         if (cleanupRenderer?.domElement.parentNode === container) {
           container.removeChild(cleanupRenderer.domElement);
         }
