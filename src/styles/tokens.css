@@ -65,3 +65,24 @@
   --motion-fast: 120ms ease;
   --motion-base: 200ms ease;
 }
+
+/* Light theme — overrides the color tokens only (set data-theme="light" on <html>). */
+:root[data-theme='light'] {
+  --color-bg: #f4f5f7;
+  --color-surface-1: #ffffff;
+  --color-surface-2: #eef0f3;
+  --color-surface-3: #e1e4e9;
+  --color-border: #d6d9df;
+  --color-border-strong: #bcc1ca;
+
+  --color-text: #1b1d23;
+  --color-text-muted: #565c67;
+  --color-text-faint: #888e99;
+
+  --color-accent: #c9772f;
+  --color-accent-soft: rgba(201, 119, 47, 0.14);
+  --color-accent-text: #a85f1d;
+
+  --shadow-1: 0 1px 2px rgba(15, 20, 30, 0.12);
+  --shadow-2: 0 8px 24px rgba(15, 20, 30, 0.18);
+}

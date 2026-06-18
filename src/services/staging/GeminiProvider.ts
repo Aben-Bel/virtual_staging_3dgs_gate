@@ -36,16 +36,15 @@ export class GeminiProvider implements StagingProvider {
 
     const model = req.model || this.defaultModel;
     const url = `${GEMINI.endpoint}/${model}:generateContent?key=${encodeURIComponent(req.apiKey)}`;
-    const body = {
-      contents: [
-        {
-          parts: [
-            { text: PRESERVATION_INSTRUCTION + req.prompt },
-            { inline_data: { mime_type: req.mimeType, data: req.imageBase64 } },
-          ],
-        },
-      ],
-    };
+    // Venue image first, then any reference images (furniture/decor) to place in.
+    const reqParts: Array<Record<string, unknown>> = [
+      { text: PRESERVATION_INSTRUCTION + req.prompt },
+      { inline_data: { mime_type: req.mimeType, data: req.imageBase64 } },
+    ];
+    for (const ref of req.references ?? []) {
+      reqParts.push({ inline_data: { mime_type: ref.mimeType, data: ref.base64 } });
+    }
+    const body = { contents: [{ parts: reqParts }] };
 
     // Compose caller abort with our own timeout.
     const timeoutCtrl = new AbortController();

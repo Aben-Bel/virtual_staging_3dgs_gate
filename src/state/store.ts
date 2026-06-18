@@ -1,5 +1,5 @@
 import { createContext, useContext } from 'react';
-import type { CapturedView, PresetSelection, SplatSource } from '../types';
+import type { AssetRef, CapturedView, PresetSelection, SplatSource } from '../types';
 import { PRESET_GROUPS } from '../config/presets';
 import { DEFAULT_MODEL_ID } from '../config/constants';
 import { composePrompt } from '../lib/composePrompt';
@@ -15,6 +15,10 @@ export interface AppState {
   prompt: string;
   /** true once the user hand-edits the prompt → stop auto-rebuilding from presets. */
   promptDirty: boolean;
+  /** Free-text furniture & positions description (Furniture tab). */
+  layout: string;
+  /** Reference images to place into the venue (Furniture tab). */
+  assets: AssetRef[];
 }
 
 export type AppAction =
@@ -28,7 +32,11 @@ export type AppAction =
   | { type: 'SET_MODEL'; model: string }
   | { type: 'SELECT_PRESET'; groupId: string; optionId: string }
   | { type: 'SET_PROMPT'; prompt: string; dirty: boolean }
-  | { type: 'REBUILD_PROMPT'; prompt: string };
+  | { type: 'REBUILD_PROMPT'; prompt: string }
+  | { type: 'SET_LAYOUT'; layout: string }
+  | { type: 'ADD_ASSET'; asset: AssetRef }
+  | { type: 'REMOVE_ASSET'; id: string }
+  | { type: 'SET_ASSET_NOTE'; id: string; note: string };
 
 export function defaultPresetSelection(): PresetSelection {
   return Object.fromEntries(PRESET_GROUPS.map((g) => [g.id, g.defaultOptionId]));
@@ -46,6 +54,8 @@ export const initialAppState: AppState = {
   // Prompt reflects the default presets from the start.
   prompt: composePrompt(initialSelection),
   promptDirty: false,
+  layout: '',
+  assets: [],
 };
 
 export function appReducer(state: AppState, action: AppAction): AppState {
@@ -101,6 +111,21 @@ export function appReducer(state: AppState, action: AppAction): AppState {
 
     case 'REBUILD_PROMPT':
       return { ...state, prompt: action.prompt, promptDirty: false };
+
+    case 'SET_LAYOUT':
+      return { ...state, layout: action.layout };
+
+    case 'ADD_ASSET':
+      return { ...state, assets: [...state.assets, action.asset] };
+
+    case 'REMOVE_ASSET':
+      return { ...state, assets: state.assets.filter((a) => a.id !== action.id) };
+
+    case 'SET_ASSET_NOTE':
+      return {
+        ...state,
+        assets: state.assets.map((a) => (a.id === action.id ? { ...a, note: action.note } : a)),
+      };
 
     default:
       return state;

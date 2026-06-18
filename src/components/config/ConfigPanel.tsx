@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { PRESET_GROUPS } from '../../config/presets';
 import { useI18n } from '../../i18n';
 import { useApiKey } from '../../hooks/useApiKey';
@@ -8,9 +9,13 @@ import { ApiKeyField } from './ApiKeyField';
 import { ModelSelector } from './ModelSelector';
 import { PresetGroup } from './PresetGroup';
 import { PromptBox } from './PromptBox';
+import { FurniturePanel } from './FurniturePanel';
 import { LangSwitch } from './LangSwitch';
+import { ThemeSwitch } from './ThemeSwitch';
 import { Button } from '../ui/Button';
 import styles from './config.module.css';
+
+type Tab = 'style' | 'furniture';
 
 interface Props {
   staging: StagingState;
@@ -24,6 +29,7 @@ export function ConfigPanel({ staging, canStage, onSubmit }: Props) {
   const { apiKey, setApiKey } = useApiKey();
   const { model, setModel } = useModel();
   const { prompt, promptDirty, selection, selectPreset, editPrompt, rebuildFromPresets } = usePrompt();
+  const [tab, setTab] = useState<Tab>('style');
 
   const busy = staging.status === 'loading' || staging.status === 'debouncing';
 
@@ -40,27 +46,50 @@ export function ConfigPanel({ staging, canStage, onSubmit }: Props) {
     <aside className={styles.panel}>
       <header className={styles.head}>
         <span>{t.config.title}</span>
-        <LangSwitch />
+        <div className={styles.headControls}>
+          <ThemeSwitch />
+          <LangSwitch />
+        </div>
       </header>
 
       <ApiKeyField value={apiKey} onChange={setApiKey} />
       <ModelSelector label={t.config.modelLabel} value={model} onChange={setModel} />
 
-      {PRESET_GROUPS.map((group) => (
-        <PresetGroup
-          key={group.id}
-          group={group}
-          selectedId={selection[group.id]}
-          onSelect={selectPreset}
-        />
-      ))}
+      <div className={styles.tabs}>
+        <button
+          className={tab === 'style' ? styles.tabActive : styles.tab}
+          onClick={() => setTab('style')}
+        >
+          {t.config.tabStyle}
+        </button>
+        <button
+          className={tab === 'furniture' ? styles.tabActive : styles.tab}
+          onClick={() => setTab('furniture')}
+        >
+          {t.config.tabFurniture}
+        </button>
+      </div>
 
-      <PromptBox
-        value={prompt}
-        dirty={promptDirty}
-        onChange={editPrompt}
-        onRebuild={rebuildFromPresets}
-      />
+      {tab === 'style' ? (
+        <>
+          {PRESET_GROUPS.map((group) => (
+            <PresetGroup
+              key={group.id}
+              group={group}
+              selectedId={selection[group.id]}
+              onSelect={selectPreset}
+            />
+          ))}
+          <PromptBox
+            value={prompt}
+            dirty={promptDirty}
+            onChange={editPrompt}
+            onRebuild={rebuildFromPresets}
+          />
+        </>
+      ) : (
+        <FurniturePanel />
+      )}
 
       <Button
         variant="accent"

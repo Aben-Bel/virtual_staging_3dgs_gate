@@ -4,6 +4,7 @@ import { StagingProviderContext } from '../services/staging/context';
 import { CaptureContext, type SplatRendererHandle } from '../services/splat/SplatRenderer';
 import { GeminiProvider } from '../services/staging/GeminiProvider';
 import { I18nProvider } from '../i18n';
+import { ThemeProvider } from '../theme';
 import type { StagingProvider } from '../types';
 
 /**
@@ -17,12 +18,14 @@ export function Providers({ children }: { children: ReactNode }) {
   const store = useMemo(() => ({ state, dispatch }), [state]);
 
   return (
-    <I18nProvider>
-      <StoreContext.Provider value={store}>
-        <StagingProviderContext.Provider value={stagingProvider}>
-          <CaptureContext.Provider value={captureRef}>{children}</CaptureContext.Provider>
-        </StagingProviderContext.Provider>
-      </StoreContext.Provider>
-    </I18nProvider>
+    <ThemeProvider>
+      <I18nProvider>
+        <StoreContext.Provider value={store}>
+          <StagingProviderContext.Provider value={stagingProvider}>
+            <CaptureContext.Provider value={captureRef}>{children}</CaptureContext.Provider>
+          </StagingProviderContext.Provider>
+        </StoreContext.Provider>
+      </I18nProvider>
+    </ThemeProvider>
   );
 }

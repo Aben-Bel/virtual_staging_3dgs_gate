@@ -20,6 +20,19 @@
   color: var(--color-text-faint);
 }
 
+.headControls { display: inline-flex; align-items: center; gap: var(--space-2); }
+.themeBtn {
+  border: 1px solid var(--color-border);
+  background: transparent;
+  color: var(--color-text-muted);
+  border-radius: var(--radius-sm);
+  padding: 2px var(--space-2);
+  font-size: var(--font-size-xs);
+  text-transform: none;
+  letter-spacing: 0;
+}
+.themeBtn:hover { border-color: var(--color-accent); color: var(--color-text); }
+
 .langSwitch {
   display: inline-flex;
   border: 1px solid var(--color-border);
@@ -91,3 +104,63 @@
 .textarea:focus { border-color: var(--color-accent); }
 
 .stageBtn { margin-top: auto; width: 100%; padding: var(--space-3); font-size: var(--font-size-md); }
+
+/* Tabs */
+.tabs {
+  display: flex;
+  gap: var(--space-1);
+  background: var(--color-surface-1);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 3px;
+}
+.tab, .tabActive {
+  flex: 1;
+  border: 0;
+  background: transparent;
+  color: var(--color-text-muted);
+  padding: var(--space-2);
+  font-size: var(--font-size-sm);
+  border-radius: var(--radius-sm);
+}
+.tabActive { background: var(--color-surface-3); color: var(--color-text); }
+
+/* Reference asset rows */
+.asset {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-2);
+}
+.assetThumb {
+  width: 44px;
+  height: 44px;
+  object-fit: cover;
+  border-radius: var(--radius-sm);
+  background: #000;
+  flex-shrink: 0;
+}
+.assetNote {
+  flex: 1;
+  min-width: 0;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  color: var(--color-text);
+  border-radius: var(--radius-sm);
+  padding: var(--space-1) var(--space-2);
+  font-size: var(--font-size-sm);
+  outline: none;
+}
+.assetNote:focus { border-color: var(--color-accent); }
+.assetRemove {
+  background: transparent;
+  border: 0;
+  color: var(--color-text-faint);
+  font-size: var(--font-size-md);
+  padding: 0 var(--space-1);
+  flex-shrink: 0;
+}
+.assetRemove:hover { color: var(--color-danger); }

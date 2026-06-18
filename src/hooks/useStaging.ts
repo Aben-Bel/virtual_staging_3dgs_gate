@@ -46,8 +46,22 @@ export function useStaging({ isOffline, justReconnected }: UseStagingArgs) {
   const canStage = selectCanStage(app) && !isOffline;
 
   // Latest request params, read inside the loading effect without re-triggering it.
-  const paramsRef = useRef({ activeView, prompt: app.prompt, apiKey: app.apiKey, model: app.model });
-  paramsRef.current = { activeView, prompt: app.prompt, apiKey: app.apiKey, model: app.model };
+  const paramsRef = useRef({
+    activeView,
+    prompt: app.prompt,
+    apiKey: app.apiKey,
+    model: app.model,
+    layout: app.layout,
+    assets: app.assets,
+  });
+  paramsRef.current = {
+    activeView,
+    prompt: app.prompt,
+    apiKey: app.apiKey,
+    model: app.model,
+    layout: app.layout,
+    assets: app.assets,
+  };
 
   // Reflect "is there a view to stage" into the machine.
   useEffect(() => {
@@ -71,7 +85,7 @@ export function useStaging({ isOffline, justReconnected }: UseStagingArgs) {
   const attempt = state.status === 'loading' ? state.attempt : 0;
   useEffect(() => {
     if (!isLoading) return;
-    const { activeView: view, prompt, apiKey, model } = paramsRef.current;
+    const { activeView: view, prompt, apiKey, model, layout, assets } = paramsRef.current;
     if (!view) {
       dispatch({ type: 'FAILURE', error: { kind: 'unknown', message: 'No active view.' } });
       return;
@@ -80,8 +94,20 @@ export function useStaging({ isOffline, justReconnected }: UseStagingArgs) {
     let cancelled = false;
     const { mimeType, base64 } = splitDataUrl(view.dataUrl);
 
+    // Fold the furniture layout + per-asset notes into the prompt, and attach
+    // the reference images so the model can place them in the venue.
+    let finalPrompt = prompt;
+    if (layout.trim()) finalPrompt += `\n\nFurniture & layout: ${layout.trim()}`;
+    assets.forEach((a, i) => {
+      finalPrompt += `\nReference image ${i + 1}${a.note.trim() ? ` (${a.note.trim()})` : ''}: incorporate this item naturally into the venue.`;
+    });
+    const references = assets.map((a) => {
+      const parsed = splitDataUrl(a.dataUrl);
+      return { base64: parsed.base64, mimeType: parsed.mimeType };
+    });
+
     provider
-      .stage({ imageBase64: base64, mimeType, prompt, apiKey, model, signal: controller.signal })
+      .stage({ imageBase64: base64, mimeType, prompt: finalPrompt, apiKey, model, references, signal: controller.signal })
       .then((res) => {
         if (cancelled) return;
         dispatch({ type: 'SUCCESS', imageDataUrl: res.imageDataUrl });

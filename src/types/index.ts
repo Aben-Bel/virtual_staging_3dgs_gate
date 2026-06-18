@@ -28,6 +28,16 @@ export interface CapturedView {
   stagedDataUrl?: string;
 }
 
+/** A reference image (furniture/decor product shot) sent to the model alongside
+ * the venue so it can place that item into the scene. */
+export interface AssetRef {
+  id: string;
+  name: string;
+  dataUrl: string;
+  /** Optional placement note, e.g. "put near the stage". */
+  note: string;
+}
+
 /** One selectable option inside a preset group. */
 export interface PresetOption {
   id: string;
@@ -50,6 +60,11 @@ export type PresetSelection = Record<string, string>;
 
 // ---------- Staging service contract ----------
 
+export interface ReferenceImage {
+  base64: string; // base64 WITHOUT data: prefix
+  mimeType: string;
+}
+
 export interface StageRequest {
   imageBase64: string; // base64 WITHOUT data: prefix
   mimeType: string;
@@ -57,6 +72,8 @@ export interface StageRequest {
   apiKey: string;
   /** Image model id; falls back to the provider default when omitted. */
   model?: string;
+  /** Extra reference images (furniture/decor) to place into the venue. */
+  references?: ReferenceImage[];
   signal?: AbortSignal;
 }
 
