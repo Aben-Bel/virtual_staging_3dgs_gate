@@ -1,0 +1,4 @@
+# Keep large sample splat assets out of the Vercel deployment.
+public/*.ksplat
+public/*.splat
+public/*.ply
