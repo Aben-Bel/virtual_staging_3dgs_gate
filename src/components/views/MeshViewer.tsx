@@ -9,6 +9,8 @@ import styles from './views.module.css';
 
 interface Props {
   splat: SplatSource | null;
+  /** Pause the render loop (e.g. while the compare overlay covers the viewer). */
+  paused?: boolean;
 }
 
 /**
@@ -16,9 +18,13 @@ interface Props {
  * plain three.js. Satisfies the same capture seam (CaptureContext) as the splat
  * viewer, so staging/capture/pose are identical. The splat path is untouched.
  */
-export function MeshViewer({ splat }: Props) {
+export function MeshViewer({ splat, paused = false }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
   const captureRef = useCaptureRef();
+  const pausedRef = useRef(paused);
+  useEffect(() => {
+    pausedRef.current = paused;
+  }, [paused]);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -108,6 +114,7 @@ export function MeshViewer({ splat }: Props) {
 
     const animate = () => {
       raf = requestAnimationFrame(animate);
+      if (pausedRef.current) return; // skip GPU work while the overlay covers us
       controls.update();
       renderer.render(scene, camera);
     };

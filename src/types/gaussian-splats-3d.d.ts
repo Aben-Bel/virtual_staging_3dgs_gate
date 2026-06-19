@@ -52,6 +52,7 @@ declare module '@mkkellogg/gaussian-splats-3d' {
     };
     addSplatScene(url: string, options?: AddSceneOptions): Promise<void>;
     start(): void;
+    stop(): void;
     update(): void;
     render(): void;
     dispose(): Promise<void> | void;

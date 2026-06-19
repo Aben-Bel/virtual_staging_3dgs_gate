@@ -72,7 +72,11 @@ export function StageView({ staging, onRetry, onCancel }: Props) {
         {/* Viewer stays mounted across modes so the camera/pose persists and the
             splat is never reloaded; Compare renders as an overlay on top.
             Mesh sources (Matterport GLB/OBJ) use MeshViewer; splats use SplatViewer. */}
-        {isMeshSource(splat) ? <MeshViewer splat={splat} /> : <SplatViewer splat={splat} />}
+        {isMeshSource(splat) ? (
+          <MeshViewer splat={splat} paused={mode === 'compare'} />
+        ) : (
+          <SplatViewer splat={splat} paused={mode === 'compare'} />
+        )}
         {mode === 'navigate' && activeView && (
           <img className={styles.activeThumb} src={activeView.dataUrl} alt={activeView.label} />
         )}
