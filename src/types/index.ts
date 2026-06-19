@@ -9,6 +9,8 @@ export interface SplatSource {
   name: string;
   url: string; // object URL
   format: SceneFormat;
+  /** Content hash — key for persisting this splat's views across runs. */
+  hash?: string;
 }
 
 /** Camera pose remembered with a capture so the view can be restored. */

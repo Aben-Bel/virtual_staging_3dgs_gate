@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useConnectivity } from '../hooks/useConnectivity';
 import { useStaging } from '../hooks/useStaging';
+import { usePersistViews } from '../hooks/usePersistViews';
 import { useI18n } from '../i18n';
 import { ViewsPanel } from '../components/views/ViewsPanel';
 import { StageView } from '../components/stage/StageView';
@@ -16,6 +17,7 @@ export function App() {
   const { t } = useI18n();
   const { isOffline, justReconnected } = useConnectivity();
   const { state, canStage, submit, retry, cancel } = useStaging({ isOffline, justReconnected });
+  usePersistViews();
   const [leftOpen, setLeftOpen] = useState(true);
   const [rightOpen, setRightOpen] = useState(true);
 

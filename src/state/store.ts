@@ -25,6 +25,7 @@ export type AppAction =
   | { type: 'SET_SPLAT'; splat: SplatSource | null }
   | { type: 'ADD_VIEW'; view: CapturedView }
   | { type: 'REMOVE_VIEW'; id: string }
+  | { type: 'SET_VIEWS'; views: CapturedView[] }
   | { type: 'SET_ACTIVE_VIEW'; id: string }
   | { type: 'SET_REF_VIEW'; id: string }
   | { type: 'SET_VIEW_RESULT'; id: string; stagedDataUrl: string }
@@ -76,6 +77,10 @@ export function appReducer(state: AppState, action: AppAction): AppState {
         state.activeViewId === action.id ? (views[0]?.id ?? null) : state.activeViewId;
       return { ...state, views, activeViewId };
     }
+
+    case 'SET_VIEWS':
+      // Hydrate saved views for a splat; first view becomes active.
+      return { ...state, views: action.views, activeViewId: action.views[0]?.id ?? null };
 
     case 'SET_ACTIVE_VIEW':
       return { ...state, activeViewId: action.id };

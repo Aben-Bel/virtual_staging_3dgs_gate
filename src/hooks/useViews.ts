@@ -1,6 +1,7 @@
 import { useCallback } from 'react';
 import { useStore } from '../state/store';
 import { useCaptureRef, inferFormat } from '../services/splat/SplatRenderer';
+import { hashFile, loadViews } from '../services/persistence/viewStore';
 import type { CapturedView, SplatSource } from '../types';
 
 function readFileAsDataUrl(file: File): Promise<string> {
@@ -18,15 +19,21 @@ export function useViews() {
   const captureRef = useCaptureRef();
 
   const importSplat = useCallback(
-    (file: File) => {
+    async (file: File) => {
       if (state.splat) URL.revokeObjectURL(state.splat.url);
+      // Hash first so the viewer mounts once (single SET_SPLAT) with the key set.
+      const hash = await hashFile(file).catch(() => undefined);
       const splat: SplatSource = {
         id: crypto.randomUUID(),
         name: file.name,
         url: URL.createObjectURL(file),
         format: inferFormat(file.name),
+        hash,
       };
       dispatch({ type: 'SET_SPLAT', splat });
+      // Restore this splat's previously captured/staged views, if any.
+      const saved = hash ? await loadViews(hash) : null;
+      dispatch({ type: 'SET_VIEWS', views: saved ?? [] });
     },
     [state.splat, dispatch],
   );
