@@ -119,6 +119,23 @@ export function SplatViewer({ splat }: Props) {
     const resizeObserver = new ResizeObserver(() => onResize?.());
     resizeObserver.observe(container);
 
+    // The viewer's keyboard shortcuts are bound to window; stop key events that
+    // come from form fields so typing in inputs doesn't move the camera.
+    const stopKeysWhileTyping = (e: KeyboardEvent) => {
+      const el = e.target as HTMLElement | null;
+      if (
+        el &&
+        (el.tagName === 'INPUT' ||
+          el.tagName === 'TEXTAREA' ||
+          el.tagName === 'SELECT' ||
+          el.isContentEditable)
+      ) {
+        e.stopPropagation();
+      }
+    };
+    document.addEventListener('keydown', stopKeysWhileTyping);
+    document.addEventListener('keyup', stopKeysWhileTyping);
+
     viewer
       .addSplatScene(splat.url, { format: FORMAT[splat.format], showLoadingUI: true })
       .then(() => {
@@ -135,6 +152,8 @@ export function SplatViewer({ splat }: Props) {
       cancelled = true;
       if (onResize) window.removeEventListener('resize', onResize);
       resizeObserver.disconnect();
+      document.removeEventListener('keydown', stopKeysWhileTyping);
+      document.removeEventListener('keyup', stopKeysWhileTyping);
       captureRef.current = null;
       const cleanupRenderer = renderer;
       const cleanupViewer = viewer;
