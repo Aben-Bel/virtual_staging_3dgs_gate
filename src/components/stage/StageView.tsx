@@ -17,9 +17,9 @@ interface Props {
   onCancel: () => void;
 }
 
-type Mode = 'navigate' | 'compare';
+type Mode = 'navigate' | 'compare' | 'picture';
 
-/** Center: navigate the splat (capture angles) or compare original vs staged. */
+/** Center: navigate the splat / view an uploaded photo, or compare vs staged. */
 export function StageView({ staging, onRetry, onCancel }: Props) {
   const { t } = useI18n();
   const { splat, captureView } = useViews();
@@ -31,27 +31,33 @@ export function StageView({ staging, onRetry, onCancel }: Props) {
   // the right pairing instead of one shared/global result.
   const stagedDataUrl = activeView?.stagedDataUrl ?? null;
   const hasOutput = staging.status === 'loading' || staging.status === 'error' || !!stagedDataUrl;
+  // An uploaded photo has no 3D to navigate — its base mode is "Picture".
+  const isUpload = activeView?.origin === 'upload';
+  const baseMode: Mode = isUpload ? 'picture' : 'navigate';
 
   // Show progress while staging.
   useEffect(() => {
     if (staging.status === 'loading') setMode('compare');
   }, [staging.status]);
 
-  // When the active view changes, show its result if it has one, else navigate
-  // back to that view's camera angle.
+  // When the active element changes: show its result if it has one, else its
+  // base view (Picture for an uploaded photo, Navigate for a splat capture).
   useEffect(() => {
-    setMode(stagedDataUrl ? 'compare' : 'navigate');
-  }, [activeView?.id, stagedDataUrl]);
+    setMode(stagedDataUrl ? 'compare' : baseMode);
+  }, [activeView?.id, stagedDataUrl, baseMode]);
+
+  // Splat keeps rendering only in Navigate; any overlay (Picture/Compare) pauses it.
+  const viewerPaused = mode !== 'navigate';
 
   return (
     <main className={styles.stage}>
       <div className={styles.toolbar}>
         <div className={styles.segmented}>
           <button
-            className={mode === 'navigate' ? styles.segActive : styles.seg}
-            onClick={() => setMode('navigate')}
+            className={mode === baseMode ? styles.segActive : styles.seg}
+            onClick={() => setMode(baseMode)}
           >
-            {t.stage.navigate}
+            {isUpload ? t.stage.picture : t.stage.navigate}
           </button>
           <button
             className={mode === 'compare' ? styles.segActive : styles.seg}
@@ -70,15 +76,20 @@ export function StageView({ staging, onRetry, onCancel }: Props) {
 
       <div className={styles.area}>
         {/* Viewer stays mounted across modes so the camera/pose persists and the
-            splat is never reloaded; Compare renders as an overlay on top.
+            splat is never reloaded; Picture/Compare render as overlays on top.
             Mesh sources (Matterport GLB/OBJ) use MeshViewer; splats use SplatViewer. */}
         {isMeshSource(splat) ? (
-          <MeshViewer splat={splat} paused={mode === 'compare'} />
+          <MeshViewer splat={splat} paused={viewerPaused} />
         ) : (
-          <SplatViewer splat={splat} paused={mode === 'compare'} />
+          <SplatViewer splat={splat} paused={viewerPaused} />
         )}
         {mode === 'navigate' && activeView && (
           <img className={styles.activeThumb} src={activeView.dataUrl} alt={activeView.label} />
+        )}
+        {mode === 'picture' && activeView && (
+          <div className={styles.pictureOverlay}>
+            <img className={styles.pictureImg} src={activeView.dataUrl} alt={activeView.label} />
+          </div>
         )}
         {mode === 'compare' && (
           <div className={styles.compareOverlay}>

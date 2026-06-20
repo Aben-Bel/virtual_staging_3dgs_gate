@@ -35,6 +35,7 @@ const en = {
   stage: {
     navigate: 'Navigate',
     compare: 'Compare',
+    picture: 'Picture',
     capture: 'Capture angle',
     original: 'Original',
     staged: 'Staged',
@@ -138,6 +139,7 @@ const de: Dict = {
   stage: {
     navigate: 'Navigieren',
     compare: 'Vergleichen',
+    picture: 'Bild',
     capture: 'Blickwinkel erfassen',
     original: 'Original',
     staged: 'Gestaltet',
